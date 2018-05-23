@@ -3,10 +3,8 @@ package com.company;
 public class Main {
 
     public static void main(String[] args) {
-        String s = "a\\n";
+        String s = "a?";
 
-        Parser parser = new Parser(s);
-        RegEx re = parser.parse();
-        System.out.println(re.toString());
+        Pattern compile = Pattern.compile(s);
     }
 }

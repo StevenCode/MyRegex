@@ -2,7 +2,7 @@ package com.company;
 
 public class MultiChoice extends RegEx {
     private static final int ARRAY_SIZE = 256;
-    private boolean[] scale = new boolean[ARRAY_SIZE];
+    public boolean[] scale = new boolean[ARRAY_SIZE];
 
     public MultiChoice()
     {
