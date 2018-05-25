@@ -1,4 +1,4 @@
-package com.company;
+package com.steven;
 
 public class StarRepetition extends RegEx {
     public RegEx internal;

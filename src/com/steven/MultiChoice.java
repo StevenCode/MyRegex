@@ -1,4 +1,4 @@
-package com.company;
+package com.steven;
 
 public class MultiChoice extends RegEx {
     private static final int ARRAY_SIZE = 256;

@@ -1,4 +1,4 @@
-package com.company;
+package com.steven;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -138,6 +138,112 @@ public class Pattern {
             }
             default:
                 throw new RuntimeException(re.toString());
+        }
+    }
+
+
+
+    public boolean match(String s)
+    {
+        ArrayList<State> clist, nlist, t;
+        int end = isPrefix ? 1 : s.length();
+        for (int startIndex = 0; startIndex < end; startIndex++)
+        {
+            clist = startList(start, l1);
+            nlist = l2;
+            for (int i = startIndex; i < s.length(); i++)
+            {
+                char c = s.charAt(i);
+                step(clist, c - ' ', nlist);
+                t = clist;
+                clist = nlist;
+                nlist = t;
+                if (clist.isEmpty()) break;
+                if (!isSuffix && ismatch(clist)) return true;
+            }
+            if (ismatch(clist)) return true;
+        }
+        return false;
+    }
+
+    public boolean dfaMatch(String s)
+    {
+        int end = isPrefix ? 1 : s.length();
+        for (int startIndex = 0; startIndex < end; startIndex++)
+        {
+            DState cState = dStart;
+            for (int i = startIndex; i < s.length(); i++)
+            {
+                char c = s.charAt(i);
+                cState = step(cState, c - ' ');
+                if (cState == deadState) break;
+                if (!isSuffix && ismatch(cState)) return true;
+            }
+            if (cState != deadState && ismatch(cState)) return true;
+        }
+        return false;
+    }
+
+    private boolean ismatch(ArrayList<State> l)
+    {
+        int i;
+        for (i = 0; i < l.size(); i++)
+        {
+            if (l.get(i) == matchState) return true;
+        }
+        return false;
+    }
+    private boolean ismatch(DState ds)
+    {
+        for (int i = 0; i < ds.nList.ss.length; i++)
+        {
+            if (ds.nList.ss[i] == matchState) return true;
+        }
+        return false;
+    }
+
+    private DState step(DState cState, int c)
+    {
+        if (cState.next[c] == deadState) { return deadState; }
+        if (cState.next[c] != null) { return cState.next[c]; }
+        ArrayList<State> clist = new ArrayList<State>();
+        ArrayList<State> nlist = new ArrayList<State>();
+        for (int i = 0; i < cState.nList.ss.length; i++)
+        {
+            clist.add(cState.nList.ss[i]);
+        }
+        step(clist, c, nlist);
+        if (nlist.isEmpty())
+        {
+            return deadState;
+        }
+        else
+        {
+            NfaList list = new NfaList(nlist);
+            if (!allDStates.containsKey(list))
+            {
+                allDStates.put(list, new DState(list));
+            }
+            return cState.next[c] = allDStates.get(list);
+        }
+    }
+
+    private void step(ArrayList<State> clist, int c, ArrayList<State> nlist){
+        int i;
+        State s;
+        listid++;
+        nlist.clear();
+        for (i = 0; i < clist.size(); i++){
+            s = clist.get(i);
+            if (s.c == c || (s.c == AnyChar && c != '\n' - ' ')
+                    || (s.c == SingleLetter && Character.isLetter(s.c))
+                    || (s.c == NonSingleLetter && !Character.isLetter(s.c))) addState(
+                    nlist, s.out);
+            else if (s.c == Scale)
+            {
+                ScaleState ss = (ScaleState) s;
+                if (ss.scale[c]) addState(nlist, ss.out);
+            }
         }
     }
 
